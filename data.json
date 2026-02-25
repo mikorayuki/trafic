@@ -1,6 +1,7 @@
 {
-  "target_url": "https://zulfanfuadi.my.id",
-  "delay_ms": 1000,
-  "burst_power": 5,
-  "tor_reset_seconds": 15
+  "target_url": "https://mikorayuki.my.id",
+  "delay_ms": 500,
+  "burst_power": 10,
+  "tor_reset_seconds": 30,
+  "request_timeout_ms": 8000
 }
