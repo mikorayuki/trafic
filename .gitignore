@@ -1,0 +1,12 @@
+# Mengabaikan folder node_modules (untuk Node.js)
+node_modules/
+
+# Mengabaikan folder environment (untuk Python)
+venv/
+.env
+
+# Mengabaikan file log
+*.log
+
+# Mengabaikan file sistem (macOS)
+.DS_Store

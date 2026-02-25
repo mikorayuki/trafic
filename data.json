@@ -1,0 +1,6 @@
+{
+  "target_url": "https://zulfanfuadi.my.id",
+  "min_delay_ms": 800,
+  "max_delay_ms": 3500,
+  "burst_power": 5
+}
