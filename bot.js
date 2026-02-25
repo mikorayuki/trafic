@@ -16,6 +16,7 @@ const USER_AGENTS = [
 ];
 
 let stats = { success: 0, failed: 0, total: 0 };
+let currentIp = "MENDAPATKAN IP...";
 
 // Fungsi Ekstrak OS dari User Agent
 function getOS(ua) {
@@ -24,6 +25,16 @@ function getOS(ua) {
     if (ua.includes('iPhone') || ua.includes('Mac OS')) return chalk.bgWhite.black.bold(' MAC/iOS ');
     if (ua.includes('Linux')) return chalk.bgYellow.black.bold(' LINUX ');
     return chalk.bgGray.white.bold(' UNK ');
+}
+
+// Fungsi Pelacak IP Tor
+async function getTorIP() {
+    try {
+        const res = await axios.get('https://api.ipify.org?format=json', { httpsAgent, timeout: 10000 });
+        return res.data.ip;
+    } catch (err) {
+        return "IP TERSEMBUNYI (Stealth)";
+    }
 }
 
 console.log(chalk.hex('#00FFCC').bold(`
@@ -35,7 +46,7 @@ console.log(chalk.hex('#00FFCC').bold(`
 ╚═╝     ╚═╝╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚═╝`));
 
 console.log(chalk.cyan.bold("\n=================================================================="));
-console.log(chalk.yellow("  PROJECT  : ") + chalk.white.bold("MIKORAYUKI TRAFFIC ENGINE v6.0 (ULTIMATE)"));
+console.log(chalk.yellow("  PROJECT  : ") + chalk.white.bold("MIKORAYUKI TRAFFIC ENGINE v7.0 (PHANTOM)"));
 console.log(chalk.yellow("  TARGET   : ") + chalk.green(config.target_url));
 console.log(chalk.yellow("  POWER    : ") + chalk.red.bold(`PARALLEL BURST x${config.burst_power}`) + chalk.gray(` | Interval: ${config.delay_ms}ms`));
 console.log(chalk.yellow("  ROUTING  : ") + chalk.magenta.bold(`TOR SOCKS5`) + chalk.gray(` | Auto-Reset: ${config.tor_reset_seconds}s`));
@@ -64,20 +75,25 @@ async function fireSingleShot() {
             chalk.cyan(`[${reqId}] `) + 
             osBadge + chalk.green(` HIT ${res.status} `) + 
             chalk.yellow(`${ping}ms `.padEnd(7)) +
-            chalk.white(`| Sukses: ${stats.success} | Gagal: ${stats.failed}`)
+            chalk.white(`| S: ${stats.success} | F: ${stats.failed} `) + 
+            chalk.gray(`| IP: `) + chalk.magenta(currentIp)
         );
     } catch (err) {
         stats.failed++;
         console.log(
             chalk.cyan(`[${reqId}] `) + 
             osBadge + chalk.bgRed.white(` ERR Blokir/TO `) + 
-            chalk.gray(`| Menunggu rute Tor...`)
+            chalk.gray(`| IP `) + chalk.magenta(currentIp) + chalk.gray(` delay/mati.`)
         );
     }
 }
 
 async function startBot() {
-    console.log(chalk.yellow(`\n[*] Melakukan Handshake ke server MIKORAYUKI...`));
+    console.log(chalk.yellow(`\n[*] Mengekstrak Identitas IP Tor Sesi Ini...`));
+    currentIp = await getTorIP();
+    console.log(chalk.green(`[+] IDENTITAS TERDETEKSI: `) + chalk.bgGreen.black.bold(` ${currentIp} `));
+
+    console.log(chalk.yellow(`[*] Melakukan Handshake ke server MIKORAYUKI...`));
     try {
         const check = await axios.head(config.target_url, { httpsAgent, timeout: 15000 });
         console.log(chalk.green(`[+] SERVER ONLINE! (Status: ${check.status})`));
@@ -85,7 +101,6 @@ async function startBot() {
         
         setInterval(() => {
             let promises = [];
-            // Membuat Array Promise untuk ditembakkan secara serentak (Asinkron Penuh)
             for(let i = 0; i < config.burst_power; i++) {
                 promises.push(fireSingleShot());
             }
@@ -93,8 +108,8 @@ async function startBot() {
         }, config.delay_ms);
         
     } catch (err) {
-        console.log(chalk.red(`[-] KONEKSI GAGAL: Rute Tor saat ini terhalang Firewall.`));
-        console.log(chalk.yellow(`[*] Bypass diaktifkan. Meminta IP Tor baru dari sistem...\n`));
+        console.log(chalk.red(`[-] KONEKSI GAGAL: IP `) + chalk.bgRed.white(` ${currentIp} `) + chalk.red(` terhalang Firewall.`));
+        console.log(chalk.yellow(`[*] Bypass diaktifkan. Meminta rotasi IP baru dari sistem...\n`));
         process.exit(1); 
     }
 }
