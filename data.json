@@ -3,5 +3,6 @@
   "delay_ms": 500,
   "burst_power": 10,
   "tor_reset_seconds": 30,
-  "request_timeout_ms": 8000
+  "request_timeout_ms": 8000,
+  "use_tor": true
 }

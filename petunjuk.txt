@@ -1,1 +1,3 @@
-chmod +x gas.sh
+Jalankan:
+chmod +x gas.sh stop.sh
+./gas.sh
